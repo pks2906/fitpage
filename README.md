@@ -24,6 +24,37 @@ The backend was thoroughly tested using **Postman**. Each endpoint was verified 
 
 ---
 
+## Database Schema
+```
+-- Users Table
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL
+);
+
+-- Products Table
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT
+);
+
+-- Reviews Table
+CREATE TABLE reviews (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  review TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ensure a user reviews a product only once
+ALTER TABLE reviews
+ADD CONSTRAINT unique_user_product_review UNIQUE (user_id, product_id);
+```
+
 ##  Deployment Overview
 
 - **Frontend** deployed on [**Vercel**](https://vercel.com)
@@ -51,6 +82,21 @@ The backend was thoroughly tested using **Postman**. Each endpoint was verified 
 | Axios          | Prisma ORM       |              |                 |
 
 ---
+
+## Backend
+```
+cd backend
+npm install
+npx prisma generate
+npx prisma migrate dev
+node server.js
+```
+## Frontend
+```
+cd frontend
+npm install
+npm start
+```
 
 ##  Folder Structure
 ![image](https://github.com/user-attachments/assets/4485236b-fe58-4050-9c79-e845acec6639)
